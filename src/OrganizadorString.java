@@ -21,9 +21,9 @@ public class OrganizadorString {
 
     }
 
-    public static String busquedaNodo(String valor, ArrayList<Nodo>lista, ArrayList<Nodo>listaResultado){
+    public static Nodo busquedaNodo(Nodo valor, ArrayList<Nodo>lista, ArrayList<Nodo>listaResultado){
         int puntero = 0;
-        String resultado = "";
+        Nodo resultado = new Nodo(), anterior = new Nodo();
 
         for(int i = 0; i < lista.size(); i++){
             if (lista.get(i).getValue().equals(valor)){
@@ -32,25 +32,21 @@ public class OrganizadorString {
         }
 
         for(int i = puntero+1; i < lista.size(); i++){
-            if (!lista.get(i).isMarca()){
-                resultado = lista.get(i).getValue();
+            if (!lista.get(i).isMarca() && validar(lista.get(i).getValue(), listaResultado.get(listaResultado.size()-1).getValue())){
+                resultado = lista.get(i);
             }
         }
 
         if(resultado.equals("")){
+            if (puntero == lista.size() && resultado == null){return resultado;}
             for(int i = 0; i < lista.size(); i++){
-                if (lista.get(i).getValue().equals(listaResultado.get(listaResultado.size()-1))){
+                if (lista.get(i).getValue().equals(listaResultado.get(listaResultado.size()-1).getValue())){
                     lista.get(i).desmmarcar();
-                    puntero = i;
                 }
             }
-
-            for(int i = puntero+1; i < lista.size(); i++){
-                if (!lista.get(i).isMarca()){
-                    resultado = lista.get(i).getValue();
-                }
-            }
-
+            anterior = listaResultado.get(listaResultado.size()-1);
+            listaResultado.remove(listaResultado.size()-1);
+            return busquedaNodo(anterior, lista, listaResultado);
         }
 
         return resultado;
@@ -65,18 +61,22 @@ public class OrganizadorString {
                 if (validar(origen.getValue(), lista.get(i).getValue())){
                     lista.get(i).marcar();
                     listaResultado.set((listaResultado.size()+1), lista.get(i));
-                    busqueda(lista.get(i), lista, listaResultado);
                     bandera = true;
+                    return busqueda(lista.get(i), lista, listaResultado);
                 }
             }
         }
-        x x
-        1 2 3 4 5 6
+
+
         if (!bandera){
             origen.desmmarcar();
-            for (int i = 0; i < lista.size(); i++) {
-
+            listaResultado.remove(listaResultado.size()-1);
+            if (busquedaNodo(origen, lista, listaResultado) == null){
+                return false;
+            }else{
+                return busqueda(busquedaNodo(origen, lista, listaResultado), lista, listaResultado);
             }
+
         }
 
         if (lista.size() == listaResultado.size())
